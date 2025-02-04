@@ -1,8 +1,10 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS, cross_origin
 import pandas as pd
 import numpy as np
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 import joblib
+
 
 app = Flask(__name__)
 
@@ -21,7 +23,8 @@ mappings = {
     "ukm": {"Tidak": 0, "Ikut": 1},
     "gender": {"L": 0, "P": 1}
 }
-
+cors = CORS(app)
+@cross_origin()
 @app.route('/predict', methods=['POST'])
 def predict():
     try:
@@ -81,11 +84,11 @@ def predict():
 
         # Format hasil prediksi
         result = {
-            "prediction": "Terima" if prediction[0] == 1 else "Tidak",
+            "prediction": "Menerima Beasiswa" if prediction[0] == 1 else "Tidak Menerima Beasiswa",
             "prediction_code": int(prediction[0]),
             "probability": {
-                "Tidak": float(probabilities[0][0]),
-                "Terima": float(probabilities[0][1])
+                "Tidak Menerima Beasiswa": float(probabilities[0][0]),
+                "Menerima Beasiswa": float(probabilities[0][1])
             },
             "input_data": {
                 "IPK": data["IPK"],
